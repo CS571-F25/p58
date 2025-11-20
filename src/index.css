@@ -22,13 +22,23 @@ a:hover {
   color: #535bf2;
 }
 
+html {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-image: url('./assets/wallpaper.jpg');
+  background-image:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 40%, rgba(0, 0, 0, 0.45) 100%),
+    url('./assets/wood-board-background2.jpg');
+  background-size: cover, 12%;
+  background-repeat: no-repeat, repeat;
+  background-attachment: fixed, fixed;
+  background-position: center, center;
+  display: block;
+  overflow-x: hidden;
 }
 
 h1 {
