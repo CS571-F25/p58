@@ -29,6 +29,7 @@ function Card({ id, image, level, name, rarity, hideLevel, onClick, variant, isR
   const classNames = [
     styles.cardRoot,
     variant === 'optimized' ? styles.cardRootOptimized : '',
+    variant === 'large' ? styles.cardRootLarge : '',
     isReplaced ? styles.cardRootReplaced : '',
   ].filter(Boolean).join(' ')
 
@@ -50,7 +51,6 @@ function Card({ id, image, level, name, rarity, hideLevel, onClick, variant, isR
         <div className={styles.overlay} />
       </div>
       <div className={styles.content}>
-        <span className={styles.name}>{displayName}</span>
         {!hideLevel && <span className={styles.levelBadge}>Lv. {displayLevel}</span>}
       </div>
     </button>
@@ -65,7 +65,7 @@ Card.propTypes = {
   rarity: PropTypes.string,
   hideLevel: PropTypes.bool,
   onClick: PropTypes.func,
-  variant: PropTypes.oneOf(['default', 'optimized']),
+  variant: PropTypes.oneOf(['default', 'optimized', 'large']),
   isReplaced: PropTypes.bool,
 }
 

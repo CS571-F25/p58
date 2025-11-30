@@ -21,8 +21,25 @@
 
 .deckArea {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--spacing-lg);
+}
+
+/* When two decks are present, ensure they stay side-by-side */
+.pairCard:has(.deckColumn:nth-child(2)) .deckArea {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* When only one deck is shown (no optimized deck), make it larger */
+.pairCard:has(.deckColumn:only-child) .deckArea {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pairCard:has(.deckColumn:only-child) .deckColumn {
+  max-width: 600px;
+  width: 100%;
 }
 
 .compact .deckArea {
@@ -95,10 +112,10 @@
   padding-top: var(--spacing-md);
 }
 
-.compact .footer {
-  gap: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-}
+.compact   .footer {
+    gap: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+  }
 
 .footerActions {
   display: flex;
@@ -261,18 +278,28 @@
   .pairCard {
     padding: var(--spacing-lg);
     gap: var(--spacing-md);
+    transform: scale(0.9);
+    transform-origin: center;
   }
 
   .deckArea {
     grid-template-columns: 1fr;
   }
 
+  /* Force vertical stacking on mobile, even when both decks are present */
+  .pairCard:has(.deckColumn:nth-child(2)) .deckArea {
+    grid-template-columns: 1fr;
+  }
+
   .deckColumn {
     width: 100%;
+    transform: none;
   }
 
   .footer {
     align-items: stretch;
+    padding-top: var(--spacing-sm);
+    gap: var(--spacing-sm);
   }
 
   .footerActions {
@@ -288,9 +315,27 @@
 
 @media (max-width: 480px) {
   .pairCard {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     border-radius: var(--radius-lg);
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    transform: scale(0.85);
+    transform-origin: center;
+    margin: 0;
+  }
+
+  .deckArea {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  /* Ensure vertical stacking on mobile vertical */
+  .pairCard:has(.deckColumn:nth-child(2)) .deckArea {
+    grid-template-columns: 1fr;
+  }
+
+  .deckColumn {
+    transform: none;
+    gap: var(--spacing-xs);
   }
 
   .ownerLabel {
@@ -310,6 +355,11 @@
     font-size: var(--font-size-xs);
     padding: var(--spacing-xs) var(--spacing-md);
     min-height: 44px;
+  }
+
+  .footer {
+    padding-top: var(--spacing-xs);
+    gap: var(--spacing-xs);
   }
 
   .actionButton {

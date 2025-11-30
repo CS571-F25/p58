@@ -33,6 +33,19 @@
   background: radial-gradient(circle at 20% 0%, #4c1d95, #111827);
 }
 
+.cardRootLarge {
+  /* Larger card variant for standalone display - scalable by single value */
+  --deck-large-scale: 1.50;
+  width: calc(96px * var(--deck-large-scale));
+  height: calc(120px * var(--deck-large-scale));
+  border-radius: calc(12px * var(--deck-large-scale));
+}
+
+.cardRootLarge .content {
+  padding-bottom: calc(0.4rem * var(--deck-large-scale));
+  gap: calc(0.15rem * var(--deck-large-scale));
+}
+
 .cardRootReplaced {
   background: radial-gradient(circle at 20% 0%, #7c2d12, #1c1917) !important;
   border-color: rgba(251, 146, 60, 0.9) !important;
@@ -117,19 +130,21 @@
 .levelBadge {
   position: relative;
   z-index: 11;
-  min-width: 44px;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  min-width: 38px;
+  padding: 0.2rem 0.4rem;
   border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  font-size: clamp(0.65rem, 0.7rem, 0.75rem);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--color-bg-primary);
   background: linear-gradient(135deg, var(--color-warning), var(--color-warning-hover));
   box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.7),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    0 2px 5px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
   pointer-events: auto;
+  transform-origin: center;
+  transform: scale(1);
 }
 
 .srOnly {
@@ -156,8 +171,20 @@
   }
 
   .levelBadge {
-    min-width: 40px;
-    font-size: var(--font-size-xs);
+    min-width: 38px;
+    font-size: clamp(0.625rem, 0.65rem, 0.7rem);
+    padding: 0.2rem 0.35rem;
+    letter-spacing: 0.03em;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
+  }
+
+  .cardRootLarge {
+    --deck-large-scale: 1.15;
+    width: calc(84px * var(--deck-large-scale));
+    height: calc(104px * var(--deck-large-scale));
+    border-radius: calc(11px * var(--deck-large-scale));
   }
 }
 
@@ -174,13 +201,29 @@
   }
 
   .name {
-    font-size: var(--font-size-xs);
+    font-size: clamp(0.625rem, 0.65rem, 0.7rem);
   }
 
   .levelBadge {
-    min-width: 36px;
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-xs);
+    min-width: 32px;
+    font-size: clamp(0.55rem, 0.6rem, 0.65rem);
+    padding: 0.15rem 0.3rem;
+    letter-spacing: 0.02em;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
+  }
+
+  /* Large variant uses natural size on mobile (no scaling) */
+  .cardRootLarge {
+    width: 72px;
+    height: 90px;
+    border-radius: 10px;
+  }
+
+  .cardRootLarge .content {
+    padding-bottom: 0.3rem;
+    gap: 0.1rem;
   }
 }
 

@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { FaBoxOpen } from 'react-icons/fa6'
 import DeckOptPair from '../../components/DeckOptPair'
+import Deck from '../../components/Deck'
 import { useDeckCache } from '../../state/DeckCacheContext.jsx'
 import { usePlayerTag } from '../../state/PlayerTagContext.jsx'
 import { createHungarianOptimizer, optimizeDeck } from '../../services/deckOptimizer'
@@ -13,6 +15,97 @@ function resolveOwner(deck) {
     deck?.playerTag ??
     'Unknown battler'
   )
+}
+
+function extractOwnerAndRank(deck) {
+  if (!deck) return { owner: null, rank: null }
+  
+  // Try to extract from deck name (format: "Player Name (Rank #123)")
+  const name = deck.name || ''
+  const rankMatch = name.match(/\(Rank\s*#(\d+)\)/)
+  const rank = rankMatch ? parseInt(rankMatch[1], 10) : null
+  
+  // Extract owner name (everything before "(Rank #")
+  const ownerMatch = name.match(/^(.+?)\s*\(Rank\s*#\d+\)$/)
+  const owner = ownerMatch ? ownerMatch[1].trim() : (name || resolveOwner(deck))
+  
+  return { owner, rank }
+}
+
+const TT_PARAM = '159000000'
+const LABEL_PARAM = 'Royals'
+const SLOTS_PARAM = '0;0;0;0;0;0;0;0'
+
+/**
+ * Reorder deck to place champions in the 3rd slot (index 2)
+ * This is required for Clash Royale deck links
+ */
+function reorderDeckForLink(deckCards) {
+  if (!Array.isArray(deckCards) || deckCards.length !== 8) {
+    return deckCards
+  }
+
+  // Find champion card(s)
+  const championIndex = deckCards.findIndex(
+    (card) => card && String(card.rarity || '').toLowerCase() === 'champion'
+  )
+
+  // If no champion or champion is already in slot 2, return as-is
+  if (championIndex === -1 || championIndex === 2) {
+    return deckCards
+  }
+
+  // Create a new array with champion moved to index 2
+  const reordered = [...deckCards]
+  const champion = reordered[championIndex]
+  
+  // Remove champion from its current position
+  reordered.splice(championIndex, 1)
+  
+  // Insert champion at index 2
+  reordered.splice(2, 0, champion)
+
+  return reordered
+}
+
+function buildDeckLink(deck) {
+  if (!deck || !Array.isArray(deck.cards)) {
+    return null
+  }
+
+  // Reorder deck to place champions in slot 2 (index 2)
+  const reorderedCards = reorderDeckForLink(deck.cards)
+
+  const cardIds = reorderedCards
+    .map((card) => {
+      if (!card) return null
+
+      const candidateIds = [
+        card.cardID,
+        card.cardId,
+        card.id,
+        card.clashId,
+        card.meshId,
+        card.key ? card.key.replace(/^\D+/, '') : null,
+      ].map((value) => {
+        if (value == null) return null
+        const numericValue = Number(value)
+        return Number.isFinite(numericValue) ? numericValue : null
+      })
+
+      const numericId = candidateIds.find((value) => Number.isInteger(value))
+      return numericId != null ? String(numericId) : null
+    })
+    .filter(Boolean)
+
+  if (cardIds.length !== 8) {
+    return null
+  }
+
+  const deckParam = cardIds.join(';')
+  const labelParam = LABEL_PARAM ? `&l=${encodeURIComponent(LABEL_PARAM)}` : ''
+
+  return `https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=${deckParam}${labelParam}&slots=${SLOTS_PARAM}&tt=${TT_PARAM}`
 }
 
 const STORAGE_STATE_KEY = 'explore/currentState'
@@ -426,33 +519,96 @@ function Explore() {
         <p className={styles.emptyState}>No decks available to explore.</p>
       ) : (
         <div
-          className={styles.browserArea}
+          className={`${styles.browserArea} ${!hasPlayerTag ? styles.browserAreaNoTag : ''}`}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
         >
-          <button
-            type="button"
-            className={`${styles.navButton} ${styles.navButtonLeft}`}
-            onClick={goToPreviousDeck}
-            aria-label="Previous deck"
-          >
-            ‹
-          </button>
+          {hasPlayerTag && (
+            <button
+              type="button"
+              className={`${styles.navButton} ${styles.navButtonLeft}`}
+              onClick={goToPreviousDeck}
+              aria-label="Previous deck"
+            >
+              ‹
+            </button>
+          )}
 
-          <div className={styles.deckWrapper}>
+          <div>
             {currentDeck ? (
               <>
-                <DeckOptPair
-                  originalDeck={currentDeck}
-                  optimizedDeck={optimizedDeck}
-                  optimizationScore={optimizationScore ?? undefined}
-                  ownerName={resolveOwner(currentDeck)}
-                  isSaved={isCurrentSaved}
-                  onSave={handleSavePair}
-                  onRemove={handleRemoveFromCache}
-                />
+                {hasPlayerTag ? (
+                  <DeckOptPair
+                    originalDeck={currentDeck}
+                    optimizedDeck={optimizedDeck}
+                    optimizationScore={optimizationScore ?? undefined}
+                    ownerName={resolveOwner(currentDeck)}
+                    isSaved={isCurrentSaved}
+                    onSave={handleSavePair}
+                    onRemove={handleRemoveFromCache}
+                  />
+                ) : (
+                  <>
+                    <Deck
+                      title={null}
+                      cards={currentDeck.cards ?? []}
+                      hideLevel
+                      variant="large"
+                    />
+                    {(() => {
+                      const { owner, rank } = extractOwnerAndRank(currentDeck)
+                      if (!owner) return null
+                      return (
+                        <div className={styles.deckOwnerInfo}>
+                          <span className={styles.deckOwnerName}>{owner}</span>
+                          {rank !== null && (
+                            <span className={styles.deckOwnerRank}>Rank #{rank}</span>
+                          )}
+                        </div>
+                      )
+                    })()}
+                    <div className={styles.actionsContainer}>
+                      <button
+                        type="button"
+                        className={`${styles.navButton} ${styles.navButtonLeft} ${styles.navButtonMobile}`}
+                        onClick={goToPreviousDeck}
+                        aria-label="Previous deck"
+                      >
+                        ‹
+                      </button>
+                      <div className={styles.standaloneActions}>
+                        <button
+                          type="button"
+                          className={`${styles.actionButton} ${isCurrentSaved ? styles.actionButtonSaved : styles.actionButtonSave}`}
+                          onClick={isCurrentSaved ? handleRemoveFromCache : handleSavePair}
+                        >
+                          <FaBoxOpen aria-hidden="true" />
+                          <span>{isCurrentSaved ? 'Remove from cache' : 'Save to cache'}</span>
+                        </button>
+                        {buildDeckLink(currentDeck) && (
+                          <a
+                            href={buildDeckLink(currentDeck)}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className={styles.deckLinkButton}
+                          >
+                            Open in Clash Royale
+                          </a>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className={`${styles.navButton} ${styles.navButtonRight} ${styles.navButtonMobile}`}
+                        onClick={goToNextDeck}
+                        aria-label="Next deck"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 <span className={styles.deckIndex}>
                   Deck {((currentIndex % totalDecks) + totalDecks) % totalDecks + 1} of {totalDecks}
@@ -461,14 +617,16 @@ function Explore() {
             ) : null}
           </div>
 
-          <button
-            type="button"
-            className={`${styles.navButton} ${styles.navButtonRight}`}
-            onClick={goToNextDeck}
-            aria-label="Next deck"
-          >
-            ›
-          </button>
+          {hasPlayerTag && (
+            <button
+              type="button"
+              className={`${styles.navButton} ${styles.navButtonRight}`}
+              onClick={goToNextDeck}
+              aria-label="Next deck"
+            >
+              ›
+            </button>
+          )}
         </div>
       )}
     </article>

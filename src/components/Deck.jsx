@@ -10,10 +10,11 @@ function Deck({ title, cards, hideLevel, onCardClick, variant, replacedCardIndic
       ? [...safeCards, ...Array.from({ length: 8 - safeCards.length }, () => null)]
       : safeCards
 
-  const rootClassName =
-    variant === 'optimized'
-      ? `${styles.deckRoot} ${styles.deckRootOptimized}`
-      : styles.deckRoot
+  const rootClassName = [
+    styles.deckRoot,
+    variant === 'optimized' ? styles.deckRootOptimized : '',
+    variant === 'large' ? styles.deckRootLarge : '',
+  ].filter(Boolean).join(' ')
 
   const handleCardClick = (card) => {
     if (typeof onCardClick === 'function') {
@@ -85,7 +86,7 @@ Deck.propTypes = {
   cards: PropTypes.arrayOf(cardShape).isRequired,
   hideLevel: PropTypes.bool,
   onCardClick: PropTypes.func,
-  variant: PropTypes.oneOf(['default', 'optimized']),
+  variant: PropTypes.oneOf(['default', 'optimized', 'large']),
   replacedCardIndices: PropTypes.oneOfType([
     PropTypes.instanceOf(Set),
     PropTypes.arrayOf(PropTypes.number),
