@@ -14,7 +14,7 @@
 
 .deckRootLarge {
   /* Larger deck variant for standalone display - scalable by single value */
-  --deck-large-scale: 1.5;
+  --deck-large-scale: 1.15;
   margin: 5px;
   padding: calc(var(--spacing-md) * var(--deck-large-scale)) calc(var(--spacing-md) * var(--deck-large-scale));
 }

@@ -1,6 +1,19 @@
 import PropTypes from 'prop-types'
 import Card from './Card'
 import styles from './Deck.module.css'
+import GiantHeroArt from '../assets/Giant_Hero_card_gem.png'
+import MusketeerHeroArt from '../assets/Musketeer_Hero_card_gem.png'
+import KnightHeroArt from '../assets/Knight_Hero_card_gem.png'
+import MiniPekkaHeroArt from '../assets/MiniPekka_Hero_card_gem.png'
+
+const HERO_ART_BY_NAME = {
+  Giant: GiantHeroArt,
+  Musketeer: MusketeerHeroArt,
+  Knight: KnightHeroArt,
+  'Mini P.E.K.K.A': MiniPekkaHeroArt,
+}
+
+const HERO_SLOT_INDICES = new Set([2, 3])
 
 function Deck({ title, cards, hideLevel, onCardClick, variant, replacedCardIndices }) {
   const safeCards = Array.isArray(cards) ? cards.slice(0, 8) : []
@@ -44,9 +57,15 @@ function Deck({ title, cards, hideLevel, onCardClick, variant, replacedCardIndic
 
           const { id, image, evolutionImage, level, name, rarity } = card
 
-          // Use evolution art for first two slots (index 0 and 1) if available
-          const displayImage =
-            (index === 0 || index === 1) && evolutionImage
+          const heroArt =
+            HERO_SLOT_INDICES.has(index) && typeof name === 'string'
+              ? HERO_ART_BY_NAME[name]
+              : undefined
+
+          // Prefer hero art for top-right slots, then evolution art for slots 0/1
+          const displayImage = heroArt
+            ? heroArt
+            : (index === 0 || index === 1) && evolutionImage
               ? evolutionImage
               : image
 

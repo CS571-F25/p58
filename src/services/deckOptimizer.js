@@ -469,7 +469,7 @@ function createHungarianOptimizer() {
       })
     }
 
-    if (assignmentFailed || championCount > 1) {
+    if (assignmentFailed || championCount > 2) {
       return null
     }
 

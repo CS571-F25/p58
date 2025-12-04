@@ -181,7 +181,7 @@
   }
 
   .cardRootLarge {
-    --deck-large-scale: 1.15;
+    --deck-large-scale: 1.0;
     width: calc(84px * var(--deck-large-scale));
     height: calc(104px * var(--deck-large-scale));
     border-radius: calc(11px * var(--deck-large-scale));

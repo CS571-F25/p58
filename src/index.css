@@ -48,11 +48,11 @@
   --color-text-disabled: rgba(148, 163, 184, 0.6);
 
   /* Colors - Backgrounds */
-  --color-bg-primary: #0f172a;
-  --color-bg-secondary: rgba(15, 23, 42, 0.92);
-  --color-bg-tertiary: rgba(15, 23, 42, 0.75);
-  --color-bg-card: rgba(15, 23, 42, 0.65);
-  --color-bg-overlay: rgba(7, 27, 59, 0.18);
+  --color-bg-primary: #0a1628;
+  --color-bg-secondary: rgba(10, 22, 40, 0.92);
+  --color-bg-tertiary: rgba(10, 22, 40, 0.75);
+  --color-bg-card: rgba(10, 22, 40, 0.65);
+  --color-bg-overlay: rgba(7, 27, 59, 1);
   --overlay-bg: var(--color-bg-overlay); /* Alias for backward compatibility */
 
   /* Colors - Borders */
@@ -111,15 +111,22 @@ a:hover {
   color: #535bf2;
 }
 
+html {
+  background-color: var(--color-bg-primary);
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
+  background-color: var(--color-bg-primary);
 }
 
 @media (prefers-color-scheme: light) {
