@@ -2,6 +2,12 @@
 
 Clash Cache is a React + Vite web app for exploring Clash Royale deck and leaderboard data, backed by Firebase Cloud Functions and Firestore.
 
+## Why I Built This
+
+I created this project to learn and practice React and modern web development in a hands-on, practical way. I wanted to build a fully functional application that required me to think through component design, state management, user interaction, and overall application architecture. This project gave me experience working with reusable components, managing props and state effectively, and structuring a front-end codebase in a clean and scalable way.
+
+This application was developed as my final project for CS 571 at the University of Wisconsin–Madison (Fall semester). The course focuses on modern web and mobile application development, and this project served as a capstone opportunity to apply the concepts we covered throughout the semester. It required integrating core React principles with thoughtful UI design, problem solving, and real-world development practices.
+
 ## 🖼️ App Preview
 
 <img width="2197" height="1063" alt="Screenshot from 2026-02-18 21-42-36" src="https://github.com/user-attachments/assets/ea099edd-09ee-4eb4-8a80-75d0094f3a04" />
